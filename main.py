@@ -120,34 +120,42 @@ def cards_menu() -> InlineKeyboardMarkup:
 
 # ========= 指令：/start /help /about =========
 START_TEXT = (
-    "👋 欢迎来到「轻松日常 FunBox」！\n\n"
-    "这是一个专注于 *轻娱乐·小工具·放松心情* 的中文机器人，你可以在这里：\n\n"
-    "😊 *心情工具*\n"
-    "• 随机心情一句话\n"
-    "• 心情颜色提示\n"
-    "• 放松小练习、安慰语录\n\n"
-    "🎮 *轻小游戏*\n"
-    "• 石头剪刀布\n"
-    "• 掷骰子\n"
-    "• 数字竞猜\n"
-    "• 表情组合灵感\n\n"
-    "🧠 *脑力训练*\n"
-    "• 简单脑力任务\n"
-    "• 数字记忆练习\n"
-    "• 思维小谜题\n"
-    "• 反应速度测试\n\n"
-    "🧺 *日常小助手*\n"
-    "• 今日小待办建议\n"
-    "• 适时休息提醒\n"
-    "• 整理一下的小任务\n"
-    "• 联系朋友的轻提醒\n\n"
-    "📌 *每日卡片*\n"
-    "• 今日提示卡\n"
-    "• 灵感卡片\n"
-    "• 自我关怀卡\n"
-    "• 小目标卡\n\n"
-    "本机器人仅提供轻松娱乐和日常小提醒，不包含任何金钱、奖励、博彩、投资或敏感内容，适合所有用户使用。\n\n"
-    "👇 点击下方菜单开始体验吧！"
+   👋 Welcome to “Easy Daily FunBox”!
+
+This is a Chinese-friendly bot focused on *light entertainment · handy tools · relaxation*. Here you can enjoy:
+
+😊 *Mood Tools*
+• Random mood quotes  
+• Mood color hints  
+• Relaxation exercises & comforting messages  
+
+🎮 *Light Mini Games*
+• Rock–Paper–Scissors  
+• Dice rolling  
+• Number guessing  
+• Emoji combination ideas  
+
+🧠 *Brain Training*
+• Simple brain challenges  
+• Number memory exercises  
+• Small logic puzzles  
+• Reaction speed tests  
+
+🧺 *Daily Assist*
+• Today’s small to-do suggestions  
+• Timely break reminders  
+• “Tidy up” mini tasks  
+• Gentle reminders to contact friends  
+
+📌 *Daily Cards*
+• Daily tip cards  
+• Inspiration cards  
+• Self-care cards  
+• Small goal cards  
+
+This bot is designed purely for light entertainment and daily reminders. It contains **no money, rewards, gambling, investment, or sensitive content**, and is suitable for all users.
+
+👇 Tap the menu below to start exploring!
 )
 
 
