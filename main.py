@@ -1,3 +1,4 @@
+
 import os
 import random
 import time
@@ -15,7 +16,7 @@ from telegram.ext import (
     ContextTypes,
 )
 
-# ========== Basic Config ==========
+# ========== Basic Configuration ==========
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 logging.basicConfig(
@@ -30,14 +31,16 @@ def main_menu() -> InlineKeyboardMarkup:
     keyboard = [
         [InlineKeyboardButton("🌤 Daily Start", callback_data="menu_day")],
         [
-            InlineKeyboardButton("✅ Habits & Goals", callback_data="menu_habit"),
+            InlineKeyboardButton("✅ Habits & Small Goals", callback_data="menu_habit"),
             InlineKeyboardButton("😊 Mood & Emotions", callback_data="menu_mood"),
         ],
         [
-            InlineKeyboardButton("🧠 Quizzes & Q&A", callback_data="menu_quiz"),
-            InlineKeyboardButton("📚 Light Reading", callback_data="menu_read"),
+            InlineKeyboardButton("🧠 Mini Quizzes & Q&A", callback_data="menu_quiz"),
+            InlineKeyboardButton("📚 Light Reading & Quotes", callback_data="menu_read"),
         ],
-        [InlineKeyboardButton("🎲 Random Tools", callback_data="menu_random")],
+        [
+            InlineKeyboardButton("🎲 Random Mini Tools", callback_data="menu_random"),
+        ],
     ]
     return InlineKeyboardMarkup(keyboard)
 
@@ -45,10 +48,12 @@ def main_menu() -> InlineKeyboardMarkup:
 def day_menu() -> InlineKeyboardMarkup:
     keyboard = [
         [
-            InlineKeyboardButton("📅 Daily Quote", callback_data="day_sentence"),
-            InlineKeyboardButton("📋 Daily Tip", callback_data="day_tip"),
+            InlineKeyboardButton("📅 Today's Quote", callback_data="day_sentence"),
+            InlineKeyboardButton("📋 Today's Tip", callback_data="day_tip"),
         ],
-        [InlineKeyboardButton("🧭 Daily Direction", callback_data="day_direction")],
+        [
+            InlineKeyboardButton("🧭 Today's Direction", callback_data="day_direction"),
+        ],
         [InlineKeyboardButton("⬅ Back to Home", callback_data="menu_main")],
     ]
     return InlineKeyboardMarkup(keyboard)
@@ -57,16 +62,16 @@ def day_menu() -> InlineKeyboardMarkup:
 def habit_menu() -> InlineKeyboardMarkup:
     keyboard = [
         [
-            InlineKeyboardButton("✅ Small Goal", callback_data="habit_goal"),
-            InlineKeyboardButton("🔁 Habit Micro‑Action", callback_data="habit_action"),
+            InlineKeyboardButton("✅ Generate Small Goal", callback_data="habit_goal"),
+            InlineKeyboardButton("🔁 Habit Micro-Action", callback_data="habit_action"),
         ],
         [
-            InlineKeyboardButton("🧹 Mini Clean‑up", callback_data="habit_clean"),
-            InlineKeyboardButton("🚶 Micro Movement", callback_data="habit_move"),
+            InlineKeyboardButton("🧹 Small Tidy-Up", callback_data="habit_clean"),
+            InlineKeyboardButton("🚶 Micro Exercise", callback_data="habit_move"),
         ],
         [InlineKeyboardButton("⬅ Back to Home", callback_data="menu_main")],
     ]
-    return InlineKeyboardMarkup(keyboard)
+    return InlineKeyboardMarkup(habit_menu)
 
 
 def mood_menu() -> InlineKeyboardMarkup:
@@ -76,8 +81,8 @@ def mood_menu() -> InlineKeyboardMarkup:
             InlineKeyboardButton("🎨 Mood Color", callback_data="mood_color"),
         ],
         [
-            InlineKeyboardButton("🧘 Simple Relax", callback_data="mood_relax"),
-            InlineKeyboardButton("❤️ Self‑Care", callback_data="mood_selfcare"),
+            InlineKeyboardButton("🧘 Simple Relaxation", callback_data="mood_relax"),
+            InlineKeyboardButton("❤️ Self-Care", callback_data="mood_selfcare"),
         ],
         [InlineKeyboardButton("⬅ Back to Home", callback_data="menu_main")],
     ]
@@ -87,25 +92,29 @@ def mood_menu() -> InlineKeyboardMarkup:
 def quiz_menu() -> InlineKeyboardMarkup:
     keyboard = [
         [
-            InlineKeyboardButton("🧠 Think Question", callback_data="quiz_think"),
-            InlineKeyboardButton("🔢 Number Test", callback_data="quiz_number"),
+            InlineKeyboardButton("🧠 Thinking Question", callback_data="quiz_think"),
+            InlineKeyboardButton("🔢 Number Challenge", callback_data="quiz_number"),
         ],
-        [InlineKeyboardButton("👀 Reaction Speed", callback_data="quiz_reaction")],
+        [
+            InlineKeyboardButton("👀 Reaction Speed", callback_data="quiz_reaction"),
+        ],
         [InlineKeyboardButton("⬅ Back to Home", callback_data="menu_main")],
     ]
-    return InlineKeyboardMarkup(keyboard)
+    return InlineKeyboardMarkup(quiz_menu)
 
 
 def read_menu() -> InlineKeyboardMarkup:
     keyboard = [
         [
-            InlineKeyboardButton("📖 Gentle Sentence", callback_data="read_soft"),
-            InlineKeyboardButton("💡 Idea Spark", callback_data="read_idea"),
+            InlineKeyboardButton("📖 Gentle Quotes", callback_data="read_soft"),
+            InlineKeyboardButton("💡 Idea Sparks", callback_data="read_idea"),
         ],
-        [InlineKeyboardButton("📝 Reflection Question", callback_data="read_question")],
+        [
+            InlineKeyboardButton("📝 Reflection Questions", callback_data="read_question"),
+        ],
         [InlineKeyboardButton("⬅ Back to Home", callback_data="menu_main")],
     ]
-    return InlineKeyboardMarkup(keyboard)
+    return InlineKeyboardMarkup(read_menu)
 
 
 def random_menu() -> InlineKeyboardMarkup:
@@ -115,27 +124,29 @@ def random_menu() -> InlineKeyboardMarkup:
             InlineKeyboardButton("😊 Random Emoji", callback_data="rand_emoji"),
         ],
         [
-            InlineKeyboardButton("📌 Random Task", callback_data="rand_task"),
+            InlineKeyboardButton("📌 Random Mini Task", callback_data="rand_task"),
             InlineKeyboardButton("✨ Random Inspiration", callback_data="rand_inspire"),
         ],
         [InlineKeyboardButton("⬅ Back to Home", callback_data="menu_main")],
     ]
-    return InlineKeyboardMarkup(keyboard)
+    return InlineKeyboardMarkup(random_menu)
 
 
 # ========== /start /help /about ==========
 START_TEXT = (
-    "👋 Welcome to *Light Time · Life Hub*!\n\n"
-    "This is a bot focused on *small daily goals, emotional care, light quizzes, and random inspiration*.\n\n"
-    "You can:\n"
-    "🌤 Get gentle tips to start your day\n"
-    "✅ Generate small goals and habit micro‑actions\n"
-    "😊 Express your mood with words or colors\n"
-    "🧠 Try light thinking questions and mini tests\n"
-    "📚 Read gentle sentences and reflections\n"
+    "👋 Welcome to **Light Moments · Life Hub**!\n\n"
+    "This is a Chinese-language bot focused on *daily small goals, emotional care, "
+    "light quizzes, and random inspiration*.\n\n"
+    "Here you can:\n"
+    "🌤 View small tips to start your day\n"
+    "✅ Generate simple goals and habit micro-actions\n"
+    "😊 Express your mood with a sentence or a color\n"
+    "🧠 Do a few light thinking tasks and mini tests\n"
+    "📚 Read gentle quotes and reflection questions\n"
     "🎲 Get random numbers, emojis, tasks, or inspiration\n\n"
-    "This bot provides only relaxed, healthy text interactions. No money, rewards, gambling, investment, or sensitive content involved.\n\n"
-    "👇 Use the buttons below to choose what you want to try now:"
+    "This bot only provides light, healthy text interactions. "
+    "It does not involve money, rewards, gambling, investment, or sensitive content.\n\n"
+    "👇 Use the buttons below to choose what you'd like to explore right now:"
 )
 
 
@@ -150,23 +161,24 @@ async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = (
         "📝 How to Use\n\n"
         "• Send /start to open the main menu\n"
-        "• Use the buttons to explore different modules\n"
-        "• Each button gives a short text or interaction\n"
-        "• If the interface freezes, send /start to reset\n"
+        "• Use the buttons to enter different modules: Daily Start / Habits & Goals / "
+        "Mood Tools / Mini Quizzes / Light Reading / Random Tools\n"
+        "• Each button provides corresponding text content or interactions\n"
+        "• If the interface gets stuck, send /start again to return to the home page\n"
     )
     await update.message.reply_text(text)
 
 
 async def about_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = (
-        "ℹ️ About *Light Time · Life Hub*\n\n"
-        "A small bot to help you relax in short moments:\n"
-        "• Gentle goals and micro‑tasks for small progress\n"
-        "• Emotional tools to care for your mood\n"
-        "• Light quizzes and reading to refresh your mind\n"
-        "All content is healthy, non‑commercial, and text‑only."
+        "ℹ️ About **Light Moments · Life Hub**\n\n"
+        "This is a small bot designed to help you relax during short breaks:\n"
+        "• Encourage tiny changes through small goals and micro tasks\n"
+        "• Take care of your mood with emotional tools\n"
+        "• Activate your mind with mini quizzes and light reading\n"
+        "All content is healthy, non-commercial, and free of sensitive information."
     )
-    await update.message.reply_text(text, parse_mode="Markdown")
+    await update.message.reply_text(text)
 
 
 # ========== Button Router ==========
@@ -175,6 +187,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     data = query.data
     await query.answer()
 
+    # Menu navigation
     if data == "menu_main":
         await query.edit_message_text("🏠 Back to Home:", reply_markup=main_menu())
         return
@@ -182,112 +195,112 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await query.edit_message_text("🌤 Daily Start:", reply_markup=day_menu())
         return
     if data == "menu_habit":
-        await query.edit_message_text("✅ Habits & Goals:", reply_markup=habit_menu())
+        await query.edit_message_text("✅ Habits & Small Goals:", reply_markup=habit_menu())
         return
     if data == "menu_mood":
         await query.edit_message_text("😊 Mood & Emotions:", reply_markup=mood_menu())
         return
     if data == "menu_quiz":
-        await query.edit_message_text("🧠 Quizzes & Q&A:", reply_markup=quiz_menu())
+        await query.edit_message_text("🧠 Mini Quizzes & Q&A:", reply_markup=quiz_menu())
         return
     if data == "menu_read":
-        await query.edit_message_text("📚 Light Reading:", reply_markup=read_menu())
+        await query.edit_message_text("📚 Light Reading & Quotes:", reply_markup=read_menu())
         return
     if data == "menu_random":
-        await query.edit_message_text("🎲 Random Tools:", reply_markup=random_menu())
+        await query.edit_message_text("🎲 Random Mini Tools:", reply_markup=random_menu())
         return
 
-    # Daily Start
+    # ===== Daily Start =====
     if data == "day_sentence":
         sentences = [
-            "You can go slowly today, just don’t stop.",
-            "A very small goal for today is more than enough.",
-            "Even eating one good meal counts as living well.",
+            "You can take things slowly today, just don't stop.",
+            "Setting a very small goal for today is enough.",
+            "Even eating one good meal is a way of living seriously.",
         ]
         await query.edit_message_text(
-            "📅 Daily Quote:\n\n" + random.choice(sentences),
+            "📅 Today's Quote:\n\n" + random.choice(sentences),
             reply_markup=day_menu(),
         )
         return
 
     if data == "day_tip":
         tips = [
-            "Try using your phone a little less today and save some time for yourself.",
-            "Pick one small corner to tidy up for just 3 minutes.",
-            "If today feels busy, sort tasks into ‘must do’ and ‘can wait’.",
+            "Try using your phone a little less today and keep some time for yourself.",
+            "Pick a small corner you've wanted to tidy and spend 3 minutes on it.",
+            "If today is busy, try sorting tasks into 'must-do' and 'can wait'.",
         ]
         await query.edit_message_text(
-            "📋 Daily Tip:\n\n" + random.choice(tips),
+            "📋 Today's Tip:\n\n" + random.choice(tips),
             reply_markup=day_menu(),
         )
         return
 
     if data == "day_direction":
         directions = [
-            "Treat today as a ‘foundation day’ and do small things that help long‑term.",
-            "Treat today as an ‘adjustment day’ and allow yourself to slow down.",
-            "Treat today as an ‘experiment day’ and try one small new thing.",
+            "Treat today as a 'foundation day' and do small things that matter long-term.",
+            "Treat today as a 'reset day' and allow yourself to slow down.",
+            "Treat today as a 'try something new' day with a small unfamiliar action.",
         ]
         await query.edit_message_text(
-            "🧭 Daily Direction:\n\n" + random.choice(directions),
+            "🧭 Today's Direction:\n\n" + random.choice(directions),
             reply_markup=day_menu(),
         )
         return
 
-    # Habits & Goals
+    # ===== Habits & Small Goals =====
     if data == "habit_goal":
         goals = [
             "Complete one small goal that takes only 5 minutes.",
-            "Focus on just one thing that matters most to you today.",
-            "Set a goal of ‘done is enough, not perfect’.",
+            "Focus on just one thing you care about today.",
+            "Set a goal where 'done is enough, not perfect'.",
         ]
         await query.edit_message_text(
-            "✅ Small Goal:\n\n" + random.choice(goals),
+            "✅ Small Goal Suggestion:\n\n" + random.choice(goals),
             reply_markup=habit_menu(),
         )
         return
 
     if data == "habit_action":
         actions = [
-            "Drink a glass of water and say ‘good job’ to yourself.",
-            "Stand up and stretch your shoulders for 30 seconds.",
-            "Put away one item on your desk you don’t often use.",
+            "Drink a glass of water and say 'good job' to yourself.",
+            "Stand up and stretch your shoulders and neck for 30 seconds.",
+            "Put away one item on your desk that you don't use often.",
         ]
         await query.edit_message_text(
-            "🔁 Habit Micro‑Action:\n\n" + random.choice(actions),
+            "🔁 Habit Micro-Action:\n\n" + random.choice(actions),
             reply_markup=habit_menu(),
         )
         return
 
     if data == "habit_clean":
         texts = [
-            "Choose one drawer or folder and remove a few unnecessary items in 2 minutes.",
-            "Group scattered items neatly to make your space feel lighter.",
+            "Pick one drawer or folder and spend 2 minutes deleting or discarding items.",
+            "Neatly group scattered items on your desk to make it visually calmer.",
         ]
         await query.edit_message_text(
-            "🧹 Mini Clean‑up:\n\n" + random.choice(texts),
+            "🧹 Small Tidy-Up:\n\n" + random.choice(texts),
             reply_markup=habit_menu(),
         )
         return
 
     if data == "habit_move":
         moves = [
-            "Walk gently in place for 30 seconds.",
-            "Take 10 slow deep breaths while rolling your shoulders.",
-            "Stand up, walk to another room, then come back — a mini walk.",
+            "Walk lightly in place for 30 seconds.",
+            "Take 10 slow deep breaths while shrugging your shoulders to relax.",
+            "Stand up, walk to another room, and come back as a 'mini walk'.",
         ]
         await query.edit_message_text(
-            "🚶 Micro Movement:\n\n" + random.choice(moves),
+            "🚶 Micro Exercise:\n\n" + random.choice(moves),
             reply_markup=habit_menu(),
         )
         return
 
-    # Mood & Emotions
+    # ===== Mood & Emotions =====
     if data == "mood_text":
         moods = [
-            "Feeling tired is okay — it means you’ve been trying.",
-            "Your emotions change, but you’re always worthy of care.",
-            "You’re allowed to have an ‘off’ day.",
+            "It's okay to feel tired — it means you've been trying.",
+            "Emotions rise and fall, but you always deserve kindness.",
+            "It's okay to allow yourself a not-so-great day.",
         ]
         await query.edit_message_text(
             "💬 Mood Quote:\n\n" + random.choice(moods),
@@ -297,22 +310,22 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if data == "mood_color":
         colors = [
-            "🔵 Blue mood: good for calm and organizing thoughts.",
+            "🔵 Blue mood: good for quiet time and organizing thoughts.",
             "🟢 Green mood: good for relaxing and listening to music.",
             "🟡 Yellow mood: good for chatting with friends.",
-            "🟣 Purple mood: good for writing or creative thinking.",
+            "🟣 Purple mood: good for writing or brainstorming.",
         ]
         await query.edit_message_text(
-            "🎨 Mood Color:\n\n" + random.choice(colors),
+            "🎨 Mood Color Tip:\n\n" + random.choice(colors),
             reply_markup=mood_menu(),
         )
         return
 
     if data == "mood_relax":
         text = (
-            "🧘 Simple Relaxation:\n\n"
+            "🧘 Simple Relaxation Exercise:\n\n"
             "1️⃣ Sit in a comfortable position\n"
-            "2️⃣ Take 5 slow deep breaths\n"
+            "2️⃣ Take 5 slow, deep breaths\n"
             "3️⃣ With each exhale, imagine releasing a bit of tension\n"
         )
         await query.edit_message_text(text, reply_markup=mood_menu())
@@ -320,27 +333,33 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if data == "mood_selfcare":
         texts = [
-            "You can be a little kinder to yourself — perfection isn’t required.",
-            "Try giving yourself one small compliment today.",
+            "You can be a little more gentle with yourself — perfection isn't required.",
+            "Try giving yourself a small compliment, like 'I did my best today'.",
         ]
         await query.edit_message_text(
-            "❤️ Self‑Care:\n\n" + random.choice(texts),
+            "❤️ Self-Care:\n\n" + random.choice(texts),
             reply_markup=mood_menu(),
         )
         return
 
-    # Quizzes
+    # ===== Mini Quizzes & Q&A =====
     if data == "quiz_think":
         qs = [
-            "🧠 Think: What title would you give today?",
-            "🧠 Think: What small progress are you quietly proud of lately?",
+            "🧠 Think About It:\n\nIf you had to give today a title, what would it be?",
+            "🧠 Think About It:\n\nWhat's one small improvement you've noticed recently?",
         ]
-        await query.edit_message_text(random.choice(qs), reply_markup=quiz_menu())
+        await query.edit_message_text(
+            random.choice(qs),
+            reply_markup=quiz_menu(),
+        )
         return
 
     if data == "quiz_number":
         number = random.randint(10, 99)
-        text = f"🔢 Number Test:\n\nStart from {number} and subtract 3 each time in your head."
+        text = (
+            f"🔢 Number Challenge:\n\nStart from {number} in your head and subtract 3 each time. "
+            "How far can you go?"
+        )
         await query.edit_message_text(text, reply_markup=quiz_menu())
         return
 
@@ -351,7 +370,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             [InlineKeyboardButton("⬅ Back", callback_data="menu_quiz")],
         ]
         await query.edit_message_text(
-            "Click the button as fast as you can:",
+            "Click the button as soon as you see it to test your reaction speed:",
             reply_markup=InlineKeyboardMarkup(keyboard),
         )
         return
@@ -359,29 +378,29 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if data == "quiz_reaction_click":
         start = context.user_data.get("reaction_start")
         if not start:
-            msg = "Test expired. Please start again from the menu."
+            msg = "Test data expired. Please start again from the menu."
         else:
             ms = int((time.time() - start) * 1000)
-            msg = f"🎯 Your reaction time: {ms} ms"
+            msg = f"🎯 Your reaction time: {ms} ms."
         await query.edit_message_text(msg, reply_markup=quiz_menu())
         return
 
-    # Reading
+    # ===== Light Reading & Quotes =====
     if data == "read_soft":
         sentences = [
-            "You don’t have to be amazing all the time.",
-            "Many things don’t need to be done all at once.",
+            "You don't have to be amazing all the time — just remember to like yourself sometimes.",
+            "Many things don't need to be done all at once; little by little is fine.",
         ]
         await query.edit_message_text(
-            "📖 Gentle Sentence:\n\n" + random.choice(sentences),
+            "📖 Gentle Quote:\n\n" + random.choice(sentences),
             reply_markup=read_menu(),
         )
         return
 
     if data == "read_idea":
         ideas = [
-            "Write down one small thing that felt good today.",
-            "Write one line to your future self — just one line.",
+            "Try noting one small thing today that felt 'nice'.",
+            "Write one single line to your future self a month from now.",
         ]
         await query.edit_message_text(
             "💡 Idea Spark:\n\n" + random.choice(ideas),
@@ -391,17 +410,21 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if data == "read_question":
         qs = [
-            "📝 Reflection: If this week were weather, what would it be?",
-            "📝 Reflection: What have you already improved compared to before?",
+            "📝 Reflection:\n\nIf the past week were weather, what would it be like?",
+            "📝 Reflection:\n\nWhat is something you're already doing much better than before?",
         ]
-        await query.edit_message_text(random.choice(qs), reply_markup=read_menu())
+        await query.edit_message_text(
+            random.choice(qs),
+            reply_markup=read_menu(),
+        )
         return
 
-    # Random Tools
+    # ===== Random Mini Tools =====
     if data == "rand_number":
         n = random.randint(0, 100)
         await query.edit_message_text(
-            f"🎲 Random Number (0–100): {n}", reply_markup=random_menu()
+            f"🎲 Random Number (0–100): {n}",
+            reply_markup=random_menu(),
         )
         return
 
@@ -416,20 +439,20 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if data == "rand_task":
         tasks = [
-            "Take a photo of something that looks nice right now.",
-            "Finish one small task within 3 minutes.",
-            "Put your phone down for 2 minutes and do nothing.",
+            "Take a photo of something in front of you that feels 'nice'.",
+            "Find one small thing you can finish in 3 minutes and do it now.",
+            "Put your phone down for 2 minutes and just daydream.",
         ]
         await query.edit_message_text(
-            "📌 Random Task:\n\n" + random.choice(tasks),
+            "📌 Random Mini Task:\n\n" + random.choice(tasks),
             reply_markup=random_menu(),
         )
         return
 
     if data == "rand_inspire":
         ins = [
-            "Choose one theme word for today: slow / reset / light.",
-            "Think of one thing that could make you feel better in 5 minutes.",
+            "Pick a theme word for today, like: slow / reset / light.",
+            "Think of one small thing that could make you feel better in 5 minutes.",
         ]
         await query.edit_message_text(
             "✨ Random Inspiration:\n\n" + random.choice(ins),
@@ -437,13 +460,14 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return
 
+    # Fallback
     await query.edit_message_text(
-        "Command not supported. Send /start to return home.",
+        "This action is not supported. Please send /start to return home.",
         reply_markup=main_menu(),
     )
 
 
-# ========== Entry ==========
+# ========== Main Entry ==========
 def main():
     if not BOT_TOKEN:
         raise RuntimeError("BOT_TOKEN environment variable is not set!")
@@ -455,7 +479,7 @@ def main():
     app.add_handler(CommandHandler("about", about_cmd))
     app.add_handler(CallbackQueryHandler(button_handler))
 
-    logger.info("Light Time · Life Hub Bot started")
+    logger.info("Light Moments · Life Hub Bot has started")
     app.run_polling()
 
 
