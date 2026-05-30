@@ -1,476 +1,415 @@
-
 import os
 import random
 import time
 import logging
 
-from telegram import (
-    Update,
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-)
+from telegram import InlineKeyboardMarkup, InlineKeyboardButton, Update
 from telegram.ext import (
     ApplicationBuilder,
+    ContextTypes,
     CommandHandler,
     CallbackQueryHandler,
-    ContextTypes,
 )
 
-# ========== Basic Configuration ==========
-BOT_TOKEN = os.getenv("BOT_TOKEN")
-
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s",
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
+BOT_TOKEN = os.getenv("BOT_TOKEN")
 
-# ========== Menus ==========
-def main_menu() -> InlineKeyboardMarkup:
+
+# ======================= MENU UTAMA ============================
+def main_menu():
     keyboard = [
-        [InlineKeyboardButton("🌤 Daily Start", callback_data="menu_day")],
+        [InlineKeyboardButton("📅 Ringkasan Hari Ini", callback_data="today")],
         [
-            InlineKeyboardButton("✅ Habits & Small Goals", callback_data="menu_habit"),
-            InlineKeyboardButton("😊 Mood & Emotions", callback_data="menu_mood"),
+            InlineKeyboardButton("😊 Mood & Relaksasi", callback_data="mood"),
+            InlineKeyboardButton("🧠 Tantangan Mini", callback_data="mind_task"),
         ],
         [
-            InlineKeyboardButton("🧠 Mini Quizzes & Q&A", callback_data="menu_quiz"),
-            InlineKeyboardButton("📚 Light Reading & Quotes", callback_data="menu_read"),
+            InlineKeyboardButton("📚 Fakta & Pengetahuan", callback_data="knowledge"),
+            InlineKeyboardButton("🎮 Mini Game", callback_data="games"),
         ],
         [
-            InlineKeyboardButton("🎲 Random Mini Tools", callback_data="menu_random"),
+            InlineKeyboardButton("📝 Kartu Harian", callback_data="daily_card"),
+            InlineKeyboardButton("✨ Inspirasi Acak", callback_data="inspiration"),
+        ],
+        [
+            InlineKeyboardButton("⏳ Fokus 30 Detik", callback_data="focus"),
+            InlineKeyboardButton("🔔 Pengingat Istirahat", callback_data="relax"),
         ],
     ]
     return InlineKeyboardMarkup(keyboard)
 
 
-def day_menu() -> InlineKeyboardMarkup:
+# ======================= SUB MENU ============================
+def mood_menu():
     keyboard = [
         [
-            InlineKeyboardButton("📅 Today's Quote", callback_data="day_sentence"),
-            InlineKeyboardButton("📋 Today's Tip", callback_data="day_tip"),
+            InlineKeyboardButton("💬 Kalimat Hari Ini", callback_data="mood_sentence"),
+            InlineKeyboardButton("🎨 Warna & Mood", callback_data="mood_color"),
         ],
         [
-            InlineKeyboardButton("🧭 Today's Direction", callback_data="day_direction"),
+            InlineKeyboardButton("🧘 Relaksasi Singkat", callback_data="mood_relax"),
+            InlineKeyboardButton("📖 Kutipan Positif", callback_data="mood_quote"),
         ],
-        [InlineKeyboardButton("⬅ Back to Home", callback_data="menu_main")],
+        [InlineKeyboardButton("⬅ Kembali ke Menu", callback_data="back_main")],
     ]
     return InlineKeyboardMarkup(keyboard)
 
 
-def habit_menu() -> InlineKeyboardMarkup:
+def knowledge_menu():
     keyboard = [
         [
-            InlineKeyboardButton("✅ Generate Small Goal", callback_data="habit_goal"),
-            InlineKeyboardButton("🔁 Habit Micro-Action", callback_data="habit_action"),
+            InlineKeyboardButton("🌍 Fakta Unik", callback_data="know_fact"),
+            InlineKeyboardButton("🌱 Tips Sehari-hari", callback_data="know_life"),
         ],
         [
-            InlineKeyboardButton("🧹 Small Tidy-Up", callback_data="habit_clean"),
-            InlineKeyboardButton("🚶 Micro Exercise", callback_data="habit_move"),
+            InlineKeyboardButton("🧪 Sains Seru", callback_data="know_science"),
+            InlineKeyboardButton("🔤 Edukasi Kata", callback_data="know_word"),
         ],
-        [InlineKeyboardButton("⬅ Back to Home", callback_data="menu_main")],
-    ]
-    return InlineKeyboardMarkup(habit_menu)
-
-
-def mood_menu() -> InlineKeyboardMarkup:
-    keyboard = [
-        [
-            InlineKeyboardButton("💬 Mood Quote", callback_data="mood_text"),
-            InlineKeyboardButton("🎨 Mood Color", callback_data="mood_color"),
-        ],
-        [
-            InlineKeyboardButton("🧘 Simple Relaxation", callback_data="mood_relax"),
-            InlineKeyboardButton("❤️ Self-Care", callback_data="mood_selfcare"),
-        ],
-        [InlineKeyboardButton("⬅ Back to Home", callback_data="menu_main")],
+        [InlineKeyboardButton("⬅ Kembali ke Menu", callback_data="back_main")],
     ]
     return InlineKeyboardMarkup(keyboard)
 
 
-def quiz_menu() -> InlineKeyboardMarkup:
+def games_menu():
     keyboard = [
         [
-            InlineKeyboardButton("🧠 Thinking Question", callback_data="quiz_think"),
-            InlineKeyboardButton("🔢 Number Challenge", callback_data="quiz_number"),
+            InlineKeyboardButton("✊ Batu Gunting Kertas", callback_data="game_rps"),
+            InlineKeyboardButton("🎲 Lempar Dadu", callback_data="game_dice"),
         ],
         [
-            InlineKeyboardButton("👀 Reaction Speed", callback_data="quiz_reaction"),
+            InlineKeyboardButton("🔢 Tebak Angka", callback_data="game_guess"),
+            InlineKeyboardButton("😊 Kombinasi Emoji", callback_data="game_emoji"),
         ],
-        [InlineKeyboardButton("⬅ Back to Home", callback_data="menu_main")],
+        [InlineKeyboardButton("⬅ Kembali ke Menu", callback_data="back_main")],
     ]
-    return InlineKeyboardMarkup(quiz_menu)
+    return InlineKeyboardMarkup(keyboard)
 
 
-def read_menu() -> InlineKeyboardMarkup:
-    keyboard = [
-        [
-            InlineKeyboardButton("📖 Gentle Quotes", callback_data="read_soft"),
-            InlineKeyboardButton("💡 Idea Sparks", callback_data="read_idea"),
-        ],
-        [
-            InlineKeyboardButton("📝 Reflection Questions", callback_data="read_question"),
-        ],
-        [InlineKeyboardButton("⬅ Back to Home", callback_data="menu_main")],
-    ]
-    return InlineKeyboardMarkup(read_menu)
+# ======================= TEKS START ============================
+
+START_TEXT = """
+👋 Selamat datang di **DailyLife Pro · Asisten Harianmu**!
+
+Bot ini dirancang untuk menemani harimu dengan fitur ringan, santai, dan menyenangkan 👇
+
+🌤 **Ringkasan Hari Ini**  
+Dapatkan saran kecil & target ringan untuk memulai hari.
+
+😊 **Mood & Relaksasi**  
+Kalimat positif, warna mood, hingga relaksasi singkat.
+
+🧠 **Tantangan Mini**  
+Latihan fokus & aktivitas kecil untuk pikiranmu.
+
+📚 **Fakta & Pengetahuan**  
+Temukan fakta unik, tips praktis, & sains seru.
+
+🎮 **Mini Game**  
+Main cepat, santai, tanpa ribet 😆
+
+📝 **Kartu Harian**  
+Saran & refleksi ringan setiap hari.
+
+✨ **Inspirasi Acak**  
+Ide kecil untuk menyegarkan pikiran.
+
+⏳ **Fokus 30 Detik**  
+Masuk ke mode fokus singkat.
+
+🔔 **Pengingat Istirahat**  
+Jangan lupa rileks & jaga keseimbangan.
+
+Bot ini aman & bebas konten sensitif.  
+Tanpa hadiah, tanpa perjudian, tanpa layanan finansial.
+
+👇 Pilih menu di bawah & mulai eksplor!
+"""
 
 
-def random_menu() -> InlineKeyboardMarkup:
-    keyboard = [
-        [
-            InlineKeyboardButton("🎲 Random Number", callback_data="rand_number"),
-            InlineKeyboardButton("😊 Random Emoji", callback_data="rand_emoji"),
-        ],
-        [
-            InlineKeyboardButton("📌 Random Mini Task", callback_data="rand_task"),
-            InlineKeyboardButton("✨ Random Inspiration", callback_data="rand_inspire"),
-        ],
-        [InlineKeyboardButton("⬅ Back to Home", callback_data="menu_main")],
-    ]
-    return InlineKeyboardMarkup(random_menu)
-
-
-# ========== /start /help /about ==========
-START_TEXT = (
-    "👋 Welcome to **Light Moments · Life Hub**!\n\n"
-    "This is a Chinese-language bot focused on *daily small goals, emotional care, "
-    "light quizzes, and random inspiration*.\n\n"
-    "Here you can:\n"
-    "🌤 View small tips to start your day\n"
-    "✅ Generate simple goals and habit micro-actions\n"
-    "😊 Express your mood with a sentence or a color\n"
-    "🧠 Do a few light thinking tasks and mini tests\n"
-    "📚 Read gentle quotes and reflection questions\n"
-    "🎲 Get random numbers, emojis, tasks, or inspiration\n\n"
-    "This bot only provides light, healthy text interactions. "
-    "It does not involve money, rewards, gambling, investment, or sensitive content.\n\n"
-    "👇 Use the buttons below to choose what you'd like to explore right now:"
-)
-
-
+# ======================= COMMAND ============================
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.message:
-        await update.message.reply_text(
-            START_TEXT, reply_markup=main_menu(), parse_mode="Markdown"
-        )
+    await update.message.reply_text(
+        START_TEXT, reply_markup=main_menu(), parse_mode="Markdown"
+    )
 
 
 async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    text = (
-        "📝 How to Use\n\n"
-        "• Send /start to open the main menu\n"
-        "• Use the buttons to enter different modules: Daily Start / Habits & Goals / "
-        "Mood Tools / Mini Quizzes / Light Reading / Random Tools\n"
-        "• Each button provides corresponding text content or interactions\n"
-        "• If the interface gets stuck, send /start again to return to the home page\n"
+    await update.message.reply_text(
+        "📝 Cara penggunaan:\nGunakan /start untuk membuka menu utama."
     )
-    await update.message.reply_text(text)
 
 
 async def about_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    text = (
-        "ℹ️ About **Light Moments · Life Hub**\n\n"
-        "This is a small bot designed to help you relax during short breaks:\n"
-        "• Encourage tiny changes through small goals and micro tasks\n"
-        "• Take care of your mood with emotional tools\n"
-        "• Activate your mind with mini quizzes and light reading\n"
-        "All content is healthy, non-commercial, and free of sensitive information."
+    await update.message.reply_text(
+        "DailyLife Pro adalah bot asisten harian ringan yang dirancang untuk hiburan santai & keseimbangan aktivitas sehari-hari."
     )
-    await update.message.reply_text(text)
 
 
-# ========== Button Router ==========
+# ======================= BUTTON HANDLER ============================
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     data = query.data
     await query.answer()
 
-    # Menu navigation
-    if data == "menu_main":
-        await query.edit_message_text("🏠 Back to Home:", reply_markup=main_menu())
-        return
-    if data == "menu_day":
-        await query.edit_message_text("🌤 Daily Start:", reply_markup=day_menu())
-        return
-    if data == "menu_habit":
-        await query.edit_message_text("✅ Habits & Small Goals:", reply_markup=habit_menu())
-        return
-    if data == "menu_mood":
-        await query.edit_message_text("😊 Mood & Emotions:", reply_markup=mood_menu())
-        return
-    if data == "menu_quiz":
-        await query.edit_message_text("🧠 Mini Quizzes & Q&A:", reply_markup=quiz_menu())
-        return
-    if data == "menu_read":
-        await query.edit_message_text("📚 Light Reading & Quotes:", reply_markup=read_menu())
-        return
-    if data == "menu_random":
-        await query.edit_message_text("🎲 Random Mini Tools:", reply_markup=random_menu())
-        return
-
-    # ===== Daily Start =====
-    if data == "day_sentence":
-        sentences = [
-            "You can take things slowly today, just don't stop.",
-            "Setting a very small goal for today is enough.",
-            "Even eating one good meal is a way of living seriously.",
-        ]
+    if data == "back_main":
         await query.edit_message_text(
-            "📅 Today's Quote:\n\n" + random.choice(sentences),
-            reply_markup=day_menu(),
+            "🏠 Kembali ke menu utama:", reply_markup=main_menu()
         )
         return
 
-    if data == "day_tip":
-        tips = [
-            "Try using your phone a little less today and keep some time for yourself.",
-            "Pick a small corner you've wanted to tidy and spend 3 minutes on it.",
-            "If today is busy, try sorting tasks into 'must-do' and 'can wait'.",
+    if data == "today":
+        summaries = [
+            "Hari ini cocok untuk memulai sesuatu yang kecil tapi bermakna.",
+            "Pelan-pelan saja, progres kecil tetaplah progres.",
+            "Tidak perlu sempurna, nyaman saja sudah cukup.",
         ]
-        await query.edit_message_text(
-            "📋 Today's Tip:\n\n" + random.choice(tips),
-            reply_markup=day_menu(),
-        )
-        return
-
-    if data == "day_direction":
-        directions = [
-            "Treat today as a 'foundation day' and do small things that matter long-term.",
-            "Treat today as a 'reset day' and allow yourself to slow down.",
-            "Treat today as a 'try something new' day with a small unfamiliar action.",
-        ]
-        await query.edit_message_text(
-            "🧭 Today's Direction:\n\n" + random.choice(directions),
-            reply_markup=day_menu(),
-        )
-        return
-
-    # ===== Habits & Small Goals =====
-    if data == "habit_goal":
         goals = [
-            "Complete one small goal that takes only 5 minutes.",
-            "Focus on just one thing you care about today.",
-            "Set a goal where 'done is enough, not perfect'.",
+            "Rapikan meja selama 1 menit",
+            "Minum segelas air",
+            "Kirim pesan ke teman",
+            "Tulis satu kalimat",
         ]
-        await query.edit_message_text(
-            "✅ Small Goal Suggestion:\n\n" + random.choice(goals),
-            reply_markup=habit_menu(),
-        )
+        text = f"""
+📅 **Ringkasan Hari Ini**
+
+• Saran: {random.choice(summaries)}
+• Target kecil: {random.choice(goals)}
+• Nikmati hari dengan santai 🌿
+"""
+        await query.edit_message_text(text, reply_markup=main_menu(), parse_mode="Markdown")
         return
 
-    if data == "habit_action":
-        actions = [
-            "Drink a glass of water and say 'good job' to yourself.",
-            "Stand up and stretch your shoulders and neck for 30 seconds.",
-            "Put away one item on your desk that you don't use often.",
-        ]
-        await query.edit_message_text(
-            "🔁 Habit Micro-Action:\n\n" + random.choice(actions),
-            reply_markup=habit_menu(),
-        )
+    if data == "mood":
+        await query.edit_message_text("😊 Mood & Relaksasi:", reply_markup=mood_menu())
         return
 
-    if data == "habit_clean":
-        texts = [
-            "Pick one drawer or folder and spend 2 minutes deleting or discarding items.",
-            "Neatly group scattered items on your desk to make it visually calmer.",
+    if data == "mood_sentence":
+        sentences = [
+            "Kamu sudah melakukan yang terbaik hari ini.",
+            "Sedikit istirahat juga bagian dari progres.",
+            "Tidak apa-apa berjalan lebih lambat.",
+            "Bersikap lembut pada diri sendiri itu penting.",
         ]
         await query.edit_message_text(
-            "🧹 Small Tidy-Up:\n\n" + random.choice(texts),
-            reply_markup=habit_menu(),
-        )
-        return
-
-    if data == "habit_move":
-        moves = [
-            "Walk lightly in place for 30 seconds.",
-            "Take 10 slow deep breaths while shrugging your shoulders to relax.",
-            "Stand up, walk to another room, and come back as a 'mini walk'.",
-        ]
-        await query.edit_message_text(
-            "🚶 Micro Exercise:\n\n" + random.choice(moves),
-            reply_markup=habit_menu(),
-        )
-        return
-
-    # ===== Mood & Emotions =====
-    if data == "mood_text":
-        moods = [
-            "It's okay to feel tired — it means you've been trying.",
-            "Emotions rise and fall, but you always deserve kindness.",
-            "It's okay to allow yourself a not-so-great day.",
-        ]
-        await query.edit_message_text(
-            "💬 Mood Quote:\n\n" + random.choice(moods),
+            "💬 Kalimat Hari Ini:\n\n" + random.choice(sentences),
             reply_markup=mood_menu(),
         )
         return
 
     if data == "mood_color":
         colors = [
-            "🔵 Blue mood: good for quiet time and organizing thoughts.",
-            "🟢 Green mood: good for relaxing and listening to music.",
-            "🟡 Yellow mood: good for chatting with friends.",
-            "🟣 Purple mood: good for writing or brainstorming.",
+            "🔵 Biru — cocok untuk ketenangan & refleksi.",
+            "🟢 Hijau — cocok untuk relaksasi & pemulihan energi.",
+            "🟣 Ungu — cocok untuk kreativitas & inspirasi.",
+            "🟡 Kuning — cocok untuk semangat & interaksi.",
         ]
         await query.edit_message_text(
-            "🎨 Mood Color Tip:\n\n" + random.choice(colors),
+            "🎨 Warna & Mood:\n\n" + random.choice(colors),
             reply_markup=mood_menu(),
         )
         return
 
     if data == "mood_relax":
-        text = (
-            "🧘 Simple Relaxation Exercise:\n\n"
-            "1️⃣ Sit in a comfortable position\n"
-            "2️⃣ Take 5 slow, deep breaths\n"
-            "3️⃣ With each exhale, imagine releasing a bit of tension\n"
-        )
-        await query.edit_message_text(text, reply_markup=mood_menu())
-        return
-
-    if data == "mood_selfcare":
-        texts = [
-            "You can be a little more gentle with yourself — perfection isn't required.",
-            "Try giving yourself a small compliment, like 'I did my best today'.",
-        ]
         await query.edit_message_text(
-            "❤️ Self-Care:\n\n" + random.choice(texts),
+            "🧘 Relaksasi Singkat:\n\nTarik napas dalam 5 kali, rilekskan bahu & lehermu.",
             reply_markup=mood_menu(),
         )
         return
 
-    # ===== Mini Quizzes & Q&A =====
-    if data == "quiz_think":
-        qs = [
-            "🧠 Think About It:\n\nIf you had to give today a title, what would it be?",
-            "🧠 Think About It:\n\nWhat's one small improvement you've noticed recently?",
+    if data == "mood_quote":
+        quotes = [
+            "Hal kecil yang konsisten akan membawa perubahan besar.",
+            "Kamu tidak perlu terburu-buru.",
+            "Hari yang tenang juga hari yang produktif.",
         ]
         await query.edit_message_text(
-            random.choice(qs),
-            reply_markup=quiz_menu(),
+            "📖 Kutipan Positif:\n\n" + random.choice(quotes),
+            reply_markup=mood_menu(),
         )
         return
 
-    if data == "quiz_number":
-        number = random.randint(10, 99)
-        text = (
-            f"🔢 Number Challenge:\n\nStart from {number} in your head and subtract 3 each time. "
-            "How far can you go?"
-        )
-        await query.edit_message_text(text, reply_markup=quiz_menu())
+    if data == "knowledge":
+        await query.edit_message_text("📚 Fakta & Pengetahuan:", reply_markup=knowledge_menu())
         return
 
-    if data == "quiz_reaction":
-        context.user_data["reaction_start"] = time.time()
+    if data == "know_fact":
+        facts = [
+            "Madu alami tidak pernah basi.",
+            "Gurita memiliki tiga jantung.",
+            "Tubuh manusia memiliki lebih dari 600 otot.",
+        ]
+        await query.edit_message_text(
+            "🌍 Fakta Unik:\n\n" + random.choice(facts),
+            reply_markup=knowledge_menu(),
+        )
+        return
+
+    if data == "know_life":
+        tips = [
+            "Minum air secara teratur membantu menjaga energi.",
+            "Istirahat singkat meningkatkan fokus.",
+            "Tidur cukup penting untuk kesehatan mental.",
+        ]
+        await query.edit_message_text(
+            "🌱 Tips Sehari-hari:\n\n" + random.choice(tips),
+            reply_markup=knowledge_menu(),
+        )
+        return
+
+    if data == "know_science":
+        sci = [
+            "Suhu petir bisa lebih panas dari permukaan matahari.",
+            "Awan dapat memiliki berat ratusan ton.",
+            "Otak manusia aktif bahkan saat tidur.",
+        ]
+        await query.edit_message_text(
+            "🧪 Sains Seru:\n\n" + random.choice(sci),
+            reply_markup=knowledge_menu(),
+        )
+        return
+
+    if data == "know_word":
+        words = [
+            "“Healing” berarti proses pemulihan diri.",
+            "“Mindfulness” berarti kesadaran penuh terhadap momen saat ini.",
+        ]
+        await query.edit_message_text(
+            "🔤 Edukasi Kata:\n\n" + random.choice(words),
+            reply_markup=knowledge_menu(),
+        )
+        return
+
+    if data == "games":
+        await query.edit_message_text("🎮 Mini Game:", reply_markup=games_menu())
+        return
+
+    if data == "game_rps":
         keyboard = [
-            [InlineKeyboardButton("⚡ Click Now!", callback_data="quiz_reaction_click")],
-            [InlineKeyboardButton("⬅ Back", callback_data="menu_quiz")],
+            [
+                InlineKeyboardButton("✊", callback_data="rps_rock"),
+                InlineKeyboardButton("✋", callback_data="rps_paper"),
+                InlineKeyboardButton("✌", callback_data="rps_scissors"),
+            ],
+            [InlineKeyboardButton("⬅ Kembali", callback_data="games")],
+        ]
+        await query.edit_message_text("✊ Batu Gunting Kertas:", reply_markup=InlineKeyboardMarkup(keyboard))
+        return
+
+    if data.startswith("rps_"):
+        bot_choice = random.choice(["rock", "paper", "scissors"])
+        user_choice = data.split("_")[1]
+
+        emoji = {"rock": "✊", "paper": "✋", "scissors": "✌"}
+
+        if user_choice == bot_choice:
+            result = "Seri 🎯"
+        elif (
+            (user_choice == "rock" and bot_choice == "scissors")
+            or (user_choice == "paper" and bot_choice == "rock")
+            or (user_choice == "scissors" and bot_choice == "paper")
+        ):
+            result = "Kamu menang ✨"
+        else:
+            result = "Aku menang 😆"
+
+        text = f"Kamu: {emoji[user_choice]}\nAku: {emoji[bot_choice]}\n\n{result}"
+        await query.edit_message_text(text, reply_markup=games_menu())
+        return
+
+    if data == "game_dice":
+        await query.edit_message_text(
+            f"🎲 Kamu mendapatkan angka {random.randint(1,6)}.",
+            reply_markup=games_menu(),
+        )
+        return
+
+    if data == "game_guess":
+        num = random.randint(1, 5)
+        context.user_data["guess"] = num
+        keyboard = [
+            [
+                InlineKeyboardButton(str(i), callback_data=f"guess_{i}")
+                for i in range(1, 6)
+            ],
+            [InlineKeyboardButton("⬅ Kembali", callback_data="games")],
         ]
         await query.edit_message_text(
-            "Click the button as soon as you see it to test your reaction speed:",
+            "Aku memikirkan angka antara 1~5, coba tebak:",
             reply_markup=InlineKeyboardMarkup(keyboard),
         )
         return
 
-    if data == "quiz_reaction_click":
-        start = context.user_data.get("reaction_start")
-        if not start:
-            msg = "Test data expired. Please start again from the menu."
+    if data.startswith("guess_"):
+        user = int(data.split("_")[1])
+        correct = context.user_data.get("guess")
+        if user == correct:
+            msg = "🎉 Tebakanmu benar!"
         else:
-            ms = int((time.time() - start) * 1000)
-            msg = f"🎯 Your reaction time: {ms} ms."
-        await query.edit_message_text(msg, reply_markup=quiz_menu())
+            msg = f"😄 Belum tepat, angkanya adalah {correct}"
+        await query.edit_message_text(msg, reply_markup=games_menu())
         return
 
-    # ===== Light Reading & Quotes =====
-    if data == "read_soft":
-        sentences = [
-            "You don't have to be amazing all the time — just remember to like yourself sometimes.",
-            "Many things don't need to be done all at once; little by little is fine.",
+    if data == "game_emoji":
+        emo = random.sample(["😀","😎","🎉","⭐","🌈","🔥","🍀","🤗","🤩"], 5)
+        await query.edit_message_text(
+            "😊 Kombinasi Emoji:\n\n" + " ".join(emo),
+            reply_markup=games_menu(),
+        )
+        return
+
+    if data == "daily_card":
+        cards = [
+            "📝 Kartu Hari Ini:\n\nLakukan satu hal kecil yang mudah dicapai.",
+            "✨ Kartu Inspirasi:\n\nCatat satu ide menarik hari ini.",
+            "🌿 Kartu Relaksasi:\n\nLuangkan waktu singkat untuk diri sendiri.",
         ]
-        await query.edit_message_text(
-            "📖 Gentle Quote:\n\n" + random.choice(sentences),
-            reply_markup=read_menu(),
-        )
+        await query.edit_message_text(random.choice(cards), reply_markup=main_menu())
         return
 
-    if data == "read_idea":
-        ideas = [
-            "Try noting one small thing today that felt 'nice'.",
-            "Write one single line to your future self a month from now.",
-        ]
-        await query.edit_message_text(
-            "💡 Idea Spark:\n\n" + random.choice(ideas),
-            reply_markup=read_menu(),
-        )
-        return
-
-    if data == "read_question":
-        qs = [
-            "📝 Reflection:\n\nIf the past week were weather, what would it be like?",
-            "📝 Reflection:\n\nWhat is something you're already doing much better than before?",
-        ]
-        await query.edit_message_text(
-            random.choice(qs),
-            reply_markup=read_menu(),
-        )
-        return
-
-    # ===== Random Mini Tools =====
-    if data == "rand_number":
-        n = random.randint(0, 100)
-        await query.edit_message_text(
-            f"🎲 Random Number (0–100): {n}",
-            reply_markup=random_menu(),
-        )
-        return
-
-    if data == "rand_emoji":
-        emojis = ["😀", "😆", "😎", "🥳", "🤩", "🤗", "🙌", "🌈", "⭐", "✨", "🍀"]
-        seq = " ".join(random.sample(emojis, 5))
-        await query.edit_message_text(
-            "😊 Random Emoji Combo:\n\n" + seq,
-            reply_markup=random_menu(),
-        )
-        return
-
-    if data == "rand_task":
-        tasks = [
-            "Take a photo of something in front of you that feels 'nice'.",
-            "Find one small thing you can finish in 3 minutes and do it now.",
-            "Put your phone down for 2 minutes and just daydream.",
-        ]
-        await query.edit_message_text(
-            "📌 Random Mini Task:\n\n" + random.choice(tasks),
-            reply_markup=random_menu(),
-        )
-        return
-
-    if data == "rand_inspire":
+    if data == "inspiration":
         ins = [
-            "Pick a theme word for today, like: slow / reset / light.",
-            "Think of one small thing that could make you feel better in 5 minutes.",
+            "Coba sesuatu yang berbeda hari ini.",
+            "Luangkan waktu untuk hal yang kamu sukai.",
+            "Mulai dari langkah kecil.",
         ]
         await query.edit_message_text(
-            "✨ Random Inspiration:\n\n" + random.choice(ins),
-            reply_markup=random_menu(),
+            "✨ Inspirasi Acak:\n\n" + random.choice(ins),
+            reply_markup=main_menu(),
         )
         return
 
-    # Fallback
-    await query.edit_message_text(
-        "This action is not supported. Please send /start to return home.",
-        reply_markup=main_menu(),
-    )
+    if data == "focus":
+        await query.edit_message_text(
+            "⏳ Mode Fokus:\n\nTenang selama 30 detik, beri ruang untuk pikiranmu.",
+            reply_markup=InlineKeyboardMarkup(
+                [[InlineKeyboardButton("Selesai ✅", callback_data="focus_done")]]
+            ),
+        )
+        return
+
+    if data == "focus_done":
+        await query.edit_message_text(
+            "👏 Bagus sekali! Fokus singkat juga sangat bermanfaat.",
+            reply_markup=main_menu(),
+        )
+        return
+
+    if data == "relax":
+        await query.edit_message_text(
+            "🔔 Waktu Istirahat:\n\nBangun, minum air, dan regangkan tubuhmu.",
+            reply_markup=main_menu(),
+        )
+        return
 
 
-# ========== Main Entry ==========
+# ======================= MAIN ============================
 def main():
     if not BOT_TOKEN:
-        raise RuntimeError("BOT_TOKEN environment variable is not set!")
+        raise RuntimeError("❌ BOT_TOKEN belum diatur")
 
     app = ApplicationBuilder().token(BOT_TOKEN).build()
 
@@ -479,7 +418,7 @@ def main():
     app.add_handler(CommandHandler("about", about_cmd))
     app.add_handler(CallbackQueryHandler(button_handler))
 
-    logger.info("Light Moments · Life Hub Bot has started")
+    logger.info("DailyLife Pro Bot (Versi Indonesia) berjalan...")
     app.run_polling()
 
 
